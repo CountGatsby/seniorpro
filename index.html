@@ -3,93 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SéniorPro - Pesquisa de Lares e Centros de Dia</title>
+    <title>SéniorPro - Plataforma Nacional de Gerontologia</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-white border-b py-4 px-6 md:px-12 flex justify-between items-center shadow-sm">
-        <h1 class="text-2xl font-bold text-blue-900 cursor-pointer" onclick="resetSearch()">SéniorPro</h1>
-        <button onclick="openModal()" class="bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-sm px-4 py-2 rounded-xl border border-blue-200 transition">
+    <header class="bg-white border-b py-4 px-6 md:px-12 flex justify-between items-center shadow-sm sticky top-0 z-40">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+            <div class="bg-blue-900 text-white font-black text-xl px-3 py-1.5 rounded-xl">SP</div>
+            <h1 class="text-2xl font-bold text-blue-900">SéniorPro</h1>
+        </div>
+        <button onclick="openModal()" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition shadow-sm">
             Área do Proprietário
         </button>
     </header>
 
-    <!-- Hero / Pesquisa -->
-    <section class="bg-blue-900 text-white py-12 px-6 text-center">
-        <h2 class="text-3xl md:text-4xl font-extrabold mb-3">Motor de Busca de Lares e Apoio Domiciliário</h2>
-        <p class="text-blue-200 text-sm md:text-base mb-8 max-w-xl mx-auto">Encontre estruturas residenciais, centros de dia e cuidados de gerontologia em Portugal.</p>
-        
-        <div class="max-w-2xl mx-auto flex flex-col md:flex-row gap-3">
-            <input 
-                type="text" 
-                id="searchInput" 
-                placeholder="Ex: Porto, Lisboa, Cascais ou nome da instituição..." 
-                class="w-full p-4 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-inner"
-                onkeypress="handleKeyPress(event)"
-            />
-            <button 
-                onclick="searchInstitutions()" 
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
-                🔍 Pesquisar
-            </button>
+    <!-- Hero / Painel de Pesquisa Avançada -->
+    <section class="bg-blue-900 text-white py-10 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Motor de Busca Avançado de Serviços Sénior</h2>
+            <p class="text-blue-200 text-sm mb-6 text-center">Pesquise por localização exata, regime de gestão e tipo de resposta social em Portugal.</p>
+            
+            <!-- Caixa de Filtros -->
+            <div class="bg-white p-6 rounded-2xl shadow-xl text-slate-800 grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                <!-- Pesquisa Livre -->
+                <div class="md:col-span-4">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Palavra-chave / Nome da Instituição</label>
+                    <input type="text" id="keywordInput" placeholder="Ex: Residência Amor & Vida, Santa Casa..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
+                </div>
+
+                <!-- Distrito -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distrito</label>
+                    <select id="districtSelect" onchange="updateConcelhos(); applyFilters();" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                        <option value="">Todos os Distritos</option>
+                        <option value="Porto">Porto</option>
+                        <option value="Lisboa">Lisboa</option>
+                        <option value="Braga">Braga</option>
+                        <option value="Coimbra">Coimbra</option>
+                        <option value="Faro">Faro</option>
+                    </select>
+                </div>
+
+                <!-- Concelho / Freguesia -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Concelho / Localidade</label>
+                    <input type="text" id="locationInput" placeholder="Ex: Ramalde, Foz, Cascais..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
+                </div>
+
+                <!-- Tipologia / Resposta Social -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Resposta Social</label>
+                    <select id="typeSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                        <option value="">Todas as Respostas</option>
+                        <option value="ERPI / Lar de Idosos">ERPI / Lar de Idosos</option>
+                        <option value="Centro de Dia">Centro de Dia</option>
+                        <option value="Apoio Domiciliário">Apoio Domiciliário</option>
+                        <option value="Centro de Noite">Centro de Noite</option>
+                        <option value="Unidade de Cuidados Continuados">Cuidados Continuados</option>
+                    </select>
+                </div>
+
+                <!-- Entidade / Regime -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Regime / Entidade</label>
+                    <select id="entitySelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                        <option value="">Todos os Regimes</option>
+                        <option value="IPSS / Social">IPSS / Sector Social</option>
+                        <option value="Privado Lucrativo">Privado / Lucrativo</option>
+                        <option value="Misericórdia">Misericórdia</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Botão Limpar Filtros -->
+            <div class="mt-4 text-right">
+                <button onclick="resetFilters()" class="text-xs text-blue-200 hover:text-white underline">Limpar todos os filtros</button>
+            </div>
         </div>
     </section>
 
     <!-- Lista de Resultados -->
-    <main class="max-w-5xl mx-auto py-10 px-6 flex-grow w-full">
+    <main class="max-w-6xl mx-auto py-10 px-6 flex-grow w-full">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-slate-900" id="resultsTitle">Instituições em Destaque</h3>
-            <span class="text-xs text-slate-500 font-medium" id="resultsCount"></span>
+            <h3 class="text-xl font-bold text-slate-900" id="resultsTitle">Resultados da Pesquisa</h3>
+            <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-3 py-1 rounded-full" id="resultsCount">0 resultados</span>
         </div>
 
-        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Os cards vão ser injetados aqui dinamicamente pelo JavaScript -->
+        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards injetados via JS -->
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-800 text-sm">
-        &copy; 2026 SéniorPro — Guia de Serviços de Gerontologia em Portugal.
+        &copy; 2026 SéniorPro — Guia Oficial de Gerontologia em Portugal.
     </footer>
 
-    <!-- Modal Reivindicação / Proprietário -->
+    <!-- Modal Reivindicar / Proprietário -->
     <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
             <h3 class="text-xl font-bold text-blue-900 mb-2">Área do Proprietário</h3>
-            <p class="text-slate-600 text-sm mb-4">Insira o e-mail associado à sua instituição para aceder ao painel de gestão de vagas e fotos.</p>
-            <input type="email" placeholder="O seu e-mail profissional" class="w-full p-3 border border-slate-300 rounded-xl mb-3 focus:outline-none focus:border-blue-600" />
-            <button onclick="alert('Pedido enviado! Entraremos em contacto para validação.'); closeModal();" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition">
-                Entrar / Reivindicar Perfil
+            <p class="text-slate-600 text-sm mb-4">Insira o e-mail ou NIF da instituição para solicitar o acesso ao painel de atualização de vagas e preços.</p>
+            <input type="text" placeholder="NIF ou E-mail da Instituição" class="w-full p-3 border rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            <button onclick="alert('Pedido registado! Entraremos em contacto para verificação de credenciais.'); closeModal();" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition">
+                Reclamar Perfil / Login
             </button>
         </div>
     </div>
 
-    <!-- Script de Funcionamento da Pesquisa -->
+    <!-- Lógica JavaScript -->
     <script>
-        // Dados de exemplo (Serão substituídos pela base de dados futuramente)
-        const data = [
-            { id: 1, name: "Residência Sénior Amor & Vida", category: "Lar de Idosos", location: "Cascais", district: "Lisboa", vacancies: 3, price: "Desde 1.200€/mês" },
-            { id: 2, name: "Centro de Dia Invicta Sénior", category: "Centro de Dia", location: "Porto", district: "Porto", vacancies: 5, price: "Desde 450€/mês" },
-            { id: 3, name: "Lar Residencial Foz do Douro", category: "Lar de Idosos", location: "Foz do Douro", district: "Porto", vacancies: 1, price: "Desde 1.800€/mês" },
-            { id: 4, name: "Apoio Domiciliário CarePro", category: "Apoio Domiciliário", location: "Matosinhos", district: "Porto", vacancies: 10, price: "Sob Consulta" },
-            { id: 5, name: "Jardim das Camélias", category: "Lar de Idosos", location: "Sintra", district: "Lisboa", vacancies: 0, price: "Desde 1.100€/mês" },
-            { id: 6, name: "Residência Sénior Boavista", category: "Lar de Idosos", location: "Boavista", district: "Porto", vacancies: 2, price: "Desde 1.600€/mês" }
+        // Base de Dados de Demonstrativa Expandida
+        const database = [
+            { id: 1, name: "Residência Sénior Amor & Vida", type: "ERPI / Lar de Idosos", entity: "Privado Lucrativo", district: "Lisboa", concelho: "Cascais", freguesia: "Estoril", vacancies: 3, price: "Desde 1.250€/mês" },
+            { id: 2, name: "Centro Social e Paroquial de Ramalde", type: "Centro de Dia", entity: "IPSS / Social", district: "Porto", concelho: "Porto", freguesia: "Ramalde", vacancies: 5, price: "Comparticipado ISS" },
+            { id: 3, name: "Lar Residencial Foz do Douro", type: "ERPI / Lar de Idosos", entity: "Privado Lucrativo", district: "Porto", concelho: "Porto", freguesia: "Foz do Douro", vacancies: 1, price: "Desde 1.900€/mês" },
+            { id: 4, name: "Apoio Domiciliário CarePro Porto", type: "Apoio Domiciliário", entity: "Privado Lucrativo", district: "Porto", concelho: "Matosinhos", freguesia: "Senhora da Hora", vacancies: 8, price: "Desde 12€/hora" },
+            { id: 5, name: "Santa Casa da Misericórdia de Coimbra", type: "ERPI / Lar de Idosos", entity: "Misericórdia", district: "Coimbra", concelho: "Coimbra", freguesia: "Sé Nova", vacancies: 0, price: "Comparticipado ISS" },
+            { id: 6, name: "Centro de Apoio Sénior de Braga", type: "Centro de Noite", entity: "IPSS / Social", district: "Braga", concelho: "Braga", freguesia: "S. Victor", vacancies: 4, price: "Desde 350€/mês" },
+            { id: 7, name: "Unidade Cuidados Continuados Algarve", type: "Unidade de Cuidados Continuados", entity: "IPSS / Social", district: "Faro", concelho: "Faro", freguesia: "Montenegro", vacancies: 2, price: "Acordo SNS / ISS" }
         ];
 
         function renderList(items) {
             const grid = document.getElementById('resultsGrid');
             const count = document.getElementById('resultsCount');
             grid.innerHTML = '';
-            count.innerText = `${items.length} instituição(ões) encontrada(s)`;
+            count.innerText = `${items.length} instituição(ões)`;
 
             if (items.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
-                        <p class="text-slate-500 font-medium">Nenhuma instituição encontrada para esta pesquisa.</p>
-                        <button onclick="resetSearch()" class="mt-3 text-sm text-blue-600 font-bold hover:underline">Ver todas as instituições</button>
+                        <p class="text-slate-500 font-medium">Nenhuma instituição encontrada com estes critérios.</p>
+                        <button onclick="resetFilters()" class="mt-3 text-sm text-blue-600 font-bold hover:underline">Limpar Filtros</button>
                     </div>
                 `;
                 return;
@@ -99,21 +149,29 @@
                 const card = `
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                         <div>
-                            <div class="flex justify-between items-start gap-2 mb-3">
-                                <span class="bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                                    ${item.category}
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                    ${item.type}
                                 </span>
+                                <span class="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    ${item.entity}
+                                </span>
+                            </div>
+                            
+                            <h4 class="text-lg font-bold text-slate-900 leading-snug mb-1">${item.name}</h4>
+                            <p class="text-xs text-slate-500 mb-3">📍 ${item.freguesia}, ${item.concelho} (${item.district})</p>
+                            
+                            <div class="mb-4">
                                 <span class="text-xs ${item.vacancies > 0 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-500 bg-slate-100'} px-2.5 py-1 rounded-full font-semibold border">
                                     ${item.vacancies > 0 ? `${item.vacancies} vaga(s) disponível(is)` : 'Lotação Esgotada'}
                                 </span>
                             </div>
-                            <h4 class="text-xl font-bold text-slate-900 mb-1">${item.name}</h4>
-                            <p class="text-sm text-slate-500 mb-4">📍 ${item.location}, ${item.district}</p>
                         </div>
-                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between mt-2">
-                            <span class="text-sm font-semibold text-slate-700">${item.price}</span>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
+                            <span class="text-xs font-bold text-slate-700">${item.price}</span>
                             <button onclick="openModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
-                                Reclamar Negócio
+                                Reclamar
                             </button>
                         </div>
                     </div>
@@ -122,34 +180,40 @@
             });
         }
 
-        function searchInstitutions() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filtered = data.filter(item => 
-                item.name.toLowerCase().includes(query) ||
-                item.location.toLowerCase().includes(query) ||
-                item.district.toLowerCase().includes(query) ||
-                item.category.toLowerCase().includes(query)
-            );
-            
-            document.getElementById('resultsTitle').innerText = query ? `Resultados para "${query}"` : 'Instituições em Destaque';
+        function applyFilters() {
+            const keyword = document.getElementById('keywordInput').value.toLowerCase().trim();
+            const district = document.getElementById('districtSelect').value;
+            const location = document.getElementById('locationInput').value.toLowerCase().trim();
+            const type = document.getElementById('typeSelect').value;
+            const entity = document.getElementById('entitySelect').value;
+
+            const filtered = database.filter(item => {
+                const matchKeyword = !keyword || item.name.toLowerCase().includes(keyword);
+                const matchDistrict = !district || item.district === district;
+                const matchLocation = !location || item.concelho.toLowerCase().includes(location) || item.freguesia.toLowerCase().includes(location);
+                const matchType = !type || item.type === type;
+                const matchEntity = !entity || item.entity === entity;
+
+                return matchKeyword && matchDistrict && matchLocation && matchType && matchEntity;
+            });
+
             renderList(filtered);
         }
 
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') searchInstitutions();
-        }
-
-        function resetSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('resultsTitle').innerText = 'Instituições em Destaque';
-            renderList(data);
+        function resetFilters() {
+            document.getElementById('keywordInput').value = '';
+            document.getElementById('districtSelect').value = '';
+            document.getElementById('locationInput').value = '';
+            document.getElementById('typeSelect').value = '';
+            document.getElementById('entitySelect').value = '';
+            renderList(database);
         }
 
         function openModal() { document.getElementById('modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-        // Inicializar com todas
-        renderList(data);
+        // Inicializar
+        renderList(database);
     </script>
 </body>
 </html>
