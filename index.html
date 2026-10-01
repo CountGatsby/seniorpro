@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SéniorPro - Plataforma Nacional de Gerontologia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
@@ -25,35 +26,31 @@
             <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Motor de Busca Avançado de Serviços Sénior</h2>
             <p class="text-blue-200 text-sm mb-6 text-center">Pesquise por localização exata, regime de gestão e tipo de resposta social em Portugal.</p>
             
-            <!-- Caixa de Filtros -->
             <div class="bg-white p-6 rounded-2xl shadow-xl text-slate-800 grid grid-cols-1 md:grid-cols-4 gap-4">
-                
-                <!-- Pesquisa Livre -->
                 <div class="md:col-span-4">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Palavra-chave / Nome da Instituição</label>
                     <input type="text" id="keywordInput" placeholder="Ex: Residência Amor & Vida, Santa Casa..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
                 </div>
 
-                <!-- Distrito -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distrito</label>
-                    <select id="districtSelect" onchange="updateConcelhos(); applyFilters();" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                    <select id="districtSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
                         <option value="">Todos os Distritos</option>
                         <option value="Porto">Porto</option>
                         <option value="Lisboa">Lisboa</option>
                         <option value="Braga">Braga</option>
                         <option value="Coimbra">Coimbra</option>
                         <option value="Faro">Faro</option>
+                        <option value="Aveiro">Aveiro</option>
+                        <option value="Viana do Castelo">Viana do Castelo</option>
                     </select>
                 </div>
 
-                <!-- Concelho / Freguesia -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Concelho / Localidade</label>
                     <input type="text" id="locationInput" placeholder="Ex: Ramalde, Foz, Cascais..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
                 </div>
 
-                <!-- Tipologia / Resposta Social -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Resposta Social</label>
                     <select id="typeSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
@@ -66,7 +63,6 @@
                     </select>
                 </div>
 
-                <!-- Entidade / Regime -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Regime / Entidade</label>
                     <select id="entitySelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
@@ -76,10 +72,8 @@
                         <option value="Misericórdia">Misericórdia</option>
                     </select>
                 </div>
-
             </div>
 
-            <!-- Botão Limpar Filtros -->
             <div class="mt-4 text-right">
                 <button onclick="resetFilters()" class="text-xs text-blue-200 hover:text-white underline">Limpar todos os filtros</button>
             </div>
@@ -89,13 +83,11 @@
     <!-- Lista de Resultados -->
     <main class="max-w-6xl mx-auto py-10 px-6 flex-grow w-full">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-slate-900" id="resultsTitle">Resultados da Pesquisa</h3>
-            <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-3 py-1 rounded-full" id="resultsCount">0 resultados</span>
+            <h3 class="text-xl font-bold text-slate-900" id="resultsTitle">Resultados em Tempo Real</h3>
+            <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-3 py-1 rounded-full" id="resultsCount">A carregar...</span>
         </div>
 
-        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Cards injetados via JS -->
-        </div>
+        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
     <!-- Footer -->
@@ -103,31 +95,45 @@
         &copy; 2026 SéniorPro — Guia Oficial de Gerontologia em Portugal.
     </footer>
 
-    <!-- Modal Reivindicar / Proprietário -->
+    <!-- Modal Reivindicar -->
     <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
             <h3 class="text-xl font-bold text-blue-900 mb-2">Área do Proprietário</h3>
-            <p class="text-slate-600 text-sm mb-4">Insira o e-mail ou NIF da instituição para solicitar o acesso ao painel de atualização de vagas e preços.</p>
+            <p class="text-slate-600 text-sm mb-4">Insira o e-mail ou NIF da instituição para gerir o seu perfil e atualizar vagas em tempo real.</p>
             <input type="text" placeholder="NIF ou E-mail da Instituição" class="w-full p-3 border rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-            <button onclick="alert('Pedido registado! Entraremos em contacto para verificação de credenciais.'); closeModal();" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition">
+            <button onclick="alert('Pedido enviado! Entraremos em contacto para validação.'); closeModal();" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition">
                 Reclamar Perfil / Login
             </button>
         </div>
     </div>
 
-    <!-- Lógica JavaScript -->
+    <!-- Script Conexao Supabase -->
     <script>
-        // Base de Dados de Demonstrativa Expandida
-        const database = [
-            { id: 1, name: "Residência Sénior Amor & Vida", type: "ERPI / Lar de Idosos", entity: "Privado Lucrativo", district: "Lisboa", concelho: "Cascais", freguesia: "Estoril", vacancies: 3, price: "Desde 1.250€/mês" },
-            { id: 2, name: "Centro Social e Paroquial de Ramalde", type: "Centro de Dia", entity: "IPSS / Social", district: "Porto", concelho: "Porto", freguesia: "Ramalde", vacancies: 5, price: "Comparticipado ISS" },
-            { id: 3, name: "Lar Residencial Foz do Douro", type: "ERPI / Lar de Idosos", entity: "Privado Lucrativo", district: "Porto", concelho: "Porto", freguesia: "Foz do Douro", vacancies: 1, price: "Desde 1.900€/mês" },
-            { id: 4, name: "Apoio Domiciliário CarePro Porto", type: "Apoio Domiciliário", entity: "Privado Lucrativo", district: "Porto", concelho: "Matosinhos", freguesia: "Senhora da Hora", vacancies: 8, price: "Desde 12€/hora" },
-            { id: 5, name: "Santa Casa da Misericórdia de Coimbra", type: "ERPI / Lar de Idosos", entity: "Misericórdia", district: "Coimbra", concelho: "Coimbra", freguesia: "Sé Nova", vacancies: 0, price: "Comparticipado ISS" },
-            { id: 6, name: "Centro de Apoio Sénior de Braga", type: "Centro de Noite", entity: "IPSS / Social", district: "Braga", concelho: "Braga", freguesia: "S. Victor", vacancies: 4, price: "Desde 350€/mês" },
-            { id: 7, name: "Unidade Cuidados Continuados Algarve", type: "Unidade de Cuidados Continuados", entity: "IPSS / Social", district: "Faro", concelho: "Faro", freguesia: "Montenegro", vacancies: 2, price: "Acordo SNS / ISS" }
-        ];
+        // SUBSTITUI AS DUAS LINHAS ABAIXO PELOS TEUS DADOS DO SUPABASE:
+        const SUPABASE_URL = "COLA_AQUI_O_TEU_SUPABASE_URL"; 
+        const SUPABASE_ANON_KEY = "COLA_AQUI_A_TUA_SUPABASE_ANON_KEY";
+        
+        let supabaseClient = null;
+        let database = [];
+
+        if (SUPABASE_URL !== "COLA_AQUI_O_TEU_SUPABASE_URL" && typeof supabase !== 'undefined') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        async function fetchInstitutions() {
+            if (!supabaseClient) {
+                console.warn("Supabase ainda não configurado no código.");
+                return;
+            }
+            const { data, error } = await supabaseClient.from('institutions').select('*');
+            if (error) {
+                console.error("Erro Supabase:", error);
+                return;
+            }
+            database = data || [];
+            renderList(database);
+        }
 
         function renderList(items) {
             const grid = document.getElementById('resultsGrid');
@@ -169,7 +175,7 @@
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-                            <span class="text-xs font-bold text-slate-700">${item.price}</span>
+                            <span class="text-xs font-bold text-slate-700">${item.price || 'Sob Consulta'}</span>
                             <button onclick="openModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
                                 Reclamar
                             </button>
@@ -212,8 +218,7 @@
         function openModal() { document.getElementById('modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-        // Inicializar
-        renderList(database);
+        window.onload = fetchInstitutions;
     </script>
 </body>
 </html>
