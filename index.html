@@ -110,14 +110,14 @@
 
     <!-- Script Conexao Supabase -->
     <script>
-        // SUBSTITUI AS DUAS LINHAS ABAIXO PELOS TEUS DADOS DO SUPABASE:
-        const SUPABASE_URL = "https://lxoqqshmjdjcbhmqzeww.supabase.co/rest/v1/"; 
+        // URL E CHAVE CORRIGIDAS
+        const SUPABASE_URL = "https://lxoqqshmjdjcbhmqzeww.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_JKHLCNar5LzKMhLfik0jxQ_xfzCWkxZ";
         
         let supabaseClient = null;
         let database = [];
 
-        if (SUPABASE_URL !== "COLA_AQUI_O_TEU_SUPABASE_URL" && typeof supabase !== 'undefined') {
+        if (typeof supabase !== 'undefined') {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
 
