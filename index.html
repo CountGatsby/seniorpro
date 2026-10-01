@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SéniorPro - Plataforma Nacional de Gerontologia</title>
+    <title>SéniorPro - Diretório Nacional da Carta Social de Portugal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -13,159 +13,278 @@
     <header class="bg-white border-b py-4 px-6 md:px-12 flex justify-between items-center shadow-sm sticky top-0 z-40">
         <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
             <div class="bg-blue-900 text-white font-black text-xl px-3 py-1.5 rounded-xl">SP</div>
-            <h1 class="text-2xl font-bold text-blue-900">SéniorPro</h1>
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 leading-none">SéniorPro</h1>
+                <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Base Nacional Carta Social</p>
+            </div>
         </div>
-        <button onclick="openModal()" class="bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition shadow-sm">
-            Área do Proprietário
-        </button>
+        <div class="flex gap-2">
+            <button onclick="switchView('public')" id="btnPublicView" class="bg-blue-900 text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm">
+                Diretório Público
+            </button>
+            <button onclick="switchView('admin')" id="btnAdminView" class="bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs px-4 py-2 rounded-xl transition">
+                📊 Backoffice
+            </button>
+        </div>
     </header>
 
-    <!-- Hero / Painel de Pesquisa Avançada -->
-    <section class="bg-blue-900 text-white py-10 px-6">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Motor de Busca Avançado de Serviços Sénior</h2>
-            <p class="text-blue-200 text-sm mb-6 text-center">Pesquise por localização exata, regime de gestão e tipo de resposta social em Portugal.</p>
-            
-            <div class="bg-white p-6 rounded-2xl shadow-xl text-slate-800 grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-4">
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Palavra-chave / Nome da Instituição</label>
-                    <input type="text" id="keywordInput" placeholder="Ex: Residência Amor & Vida, Santa Casa..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
+    <!-- VISTA PÚBLICA -->
+    <div id="publicView" class="flex-grow flex flex-col">
+        <!-- Hero / Painel de Pesquisa -->
+        <section class="bg-blue-900 text-white py-10 px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-center">Motor de Busca Nacional de Serviços Sénior</h2>
+                <p class="text-blue-200 text-sm mb-6 text-center">Pesquise todas as instituições mapeadas da Carta Social em Portugal Continental e Ilhas (Açores e Madeira).</p>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-xl text-slate-800 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Palavra-chave / Nome / NIF</label>
+                        <input type="text" id="keywordInput" placeholder="Ex: Santa Casa, Centro Social, Residência, NIF..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distrito / Região Autónoma</label>
+                        <select id="districtSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                            <option value="">Todos (Continental e Ilhas)</option>
+                            <option value="Aveiro">Aveiro</option>
+                            <option value="Beja">Beja</option>
+                            <option value="Braga">Braga</option>
+                            <option value="Bragança">Bragança</option>
+                            <option value="Castelo Branco">Castelo Branco</option>
+                            <option value="Coimbra">Coimbra</option>
+                            <option value="Évora">Évora</option>
+                            <option value="Faro">Faro</option>
+                            <option value="Guarda">Guarda</option>
+                            <option value="Leiria">Leiria</option>
+                            <option value="Lisboa">Lisboa</option>
+                            <option value="Portalegre">Portalegre</option>
+                            <option value="Porto">Porto</option>
+                            <option value="Santarém">Santarém</option>
+                            <option value="Setúbal">Setúbal</option>
+                            <option value="Viana do Castelo">Viana do Castelo</option>
+                            <option value="Vila Real">Vila Real</option>
+                            <option value="Viseu">Viseu</option>
+                            <option value="Região Autónoma dos Açores">Região Autónoma dos Açores</option>
+                            <option value="Região Autónoma da Madeira">Região Autónoma da Madeira</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Concelho / Freguesia</label>
+                        <input type="text" id="locationInput" placeholder="Ex: Foz, Cascais, Funchal, Ponta Delgada..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Resposta Social</label>
+                        <select id="typeSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                            <option value="">Todas as Respostas</option>
+                            <option value="ERPI / Lar de Idosos">ERPI / Lar de Idosos</option>
+                            <option value="Centro de Dia">Centro de Dia</option>
+                            <option value="Apoio Domiciliário">Apoio Domiciliário</option>
+                            <option value="Centro de Noite">Centro de Noite</option>
+                            <option value="Unidade de Cuidados Continuados">Cuidados Continuados</option>
+                            <option value="Acolhimento Familiar">Acolhimento Familiar</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Regime / Entidade</label>
+                        <select id="entitySelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
+                            <option value="">Todos os Regimes</option>
+                            <option value="IPSS / Social">IPSS / Sector Social</option>
+                            <option value="Privado Lucrativo">Privado / Lucrativo</option>
+                            <option value="Misericórdia">Misericórdia</option>
+                            <option value="Público / Autárquico">Público / Autárquico</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distrito</label>
-                    <select id="districtSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
-                        <option value="">Todos os Distritos</option>
-                        <option value="Porto">Porto</option>
-                        <option value="Lisboa">Lisboa</option>
-                        <option value="Braga">Braga</option>
-                        <option value="Coimbra">Coimbra</option>
-                        <option value="Faro">Faro</option>
-                        <option value="Aveiro">Aveiro</option>
-                        <option value="Viana do Castelo">Viana do Castelo</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Concelho / Localidade</label>
-                    <input type="text" id="locationInput" placeholder="Ex: Ramalde, Foz, Cascais..." class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" oninput="applyFilters()" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Resposta Social</label>
-                    <select id="typeSelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
-                        <option value="">Todas as Respostas</option>
-                        <option value="ERPI / Lar de Idosos">ERPI / Lar de Idosos</option>
-                        <option value="Centro de Dia">Centro de Dia</option>
-                        <option value="Apoio Domiciliário">Apoio Domiciliário</option>
-                        <option value="Centro de Noite">Centro de Noite</option>
-                        <option value="Unidade de Cuidados Continuados">Cuidados Continuados</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Regime / Entidade</label>
-                    <select id="entitySelect" onchange="applyFilters()" class="w-full p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white">
-                        <option value="">Todos os Regimes</option>
-                        <option value="IPSS / Social">IPSS / Sector Social</option>
-                        <option value="Privado Lucrativo">Privado / Lucrativo</option>
-                        <option value="Misericórdia">Misericórdia</option>
-                    </select>
+                <div class="mt-4 text-right">
+                    <button onclick="resetFilters()" class="text-xs text-blue-200 hover:text-white underline">Limpar todos os filtros</button>
                 </div>
             </div>
+        </section>
 
-            <div class="mt-4 text-right">
-                <button onclick="resetFilters()" class="text-xs text-blue-200 hover:text-white underline">Limpar todos os filtros</button>
+        <!-- Lista de Resultados com Paginação -->
+        <main class="max-w-6xl mx-auto py-10 px-6 flex-grow w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-900">Resultados em Tempo Real</h3>
+                <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-3 py-1 rounded-full" id="resultsCount">A carregar...</span>
+            </div>
+
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+            <!-- Controlo de Paginação -->
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm" id="paginationControls">
+                <button onclick="prevPage()" id="btnPrev" class="bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition disabled:opacity-50">Anterior</button>
+                <span class="text-xs font-semibold text-slate-600" id="pageIndicator">Página 1</span>
+                <button onclick="nextPage()" id="btnNext" class="bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition disabled:opacity-50">Seguinte</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- VISTA BACKOFFICE -->
+    <div id="adminView" class="hidden max-w-6xl mx-auto py-10 px-6 w-full flex-grow">
+        <h2 class="text-2xl font-bold text-blue-900 mb-2">Painel de Gestão e Métricas Nacionais</h2>
+        <p class="text-xs text-slate-500 mb-6">Monitorização em tempo real das instituições da Carta Social e contactos recebidos.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Total Mapeado na Carta Social</p>
+                <p class="text-3xl font-extrabold text-blue-900" id="statTotalInst">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Vagas Sinalizadas</p>
+                <p class="text-3xl font-extrabold text-emerald-600" id="statTotalVacancies">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                <p class="text-xs font-bold uppercase text-slate-400 mb-1">Pedidos de Informação</p>
+                <p class="text-3xl font-extrabold text-amber-600" id="statTotalContacts">0</p>
             </div>
         </div>
-    </section>
 
-    <!-- Lista de Resultados -->
-    <main class="max-w-6xl mx-auto py-10 px-6 flex-grow w-full">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-slate-900" id="resultsTitle">Resultados em Tempo Real</h3>
-            <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-3 py-1 rounded-full" id="resultsCount">A carregar...</span>
+        <div class="bg-white rounded-2xl border p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Contactos Recebidos no Portal</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-600">
+                    <thead class="text-xs font-bold uppercase bg-slate-50 text-slate-500">
+                        <tr>
+                            <th class="p-3">Data</th>
+                            <th class="p-3">Instituição</th>
+                            <th class="p-3">Remetente</th>
+                            <th class="p-3">Contactos</th>
+                            <th class="p-3">Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTableBody">
+                        <tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum contacto recebido até ao momento.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </main>
+    </div>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-800 text-sm">
-        &copy; 2026 SéniorPro — Guia Oficial de Gerontologia em Portugal.
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-800 text-sm mt-auto">
+        &copy; 2026 SéniorPro — Guia Oficial de Gerontologia em Portugal (Continental e Ilhas).
     </footer>
 
-    <!-- Modal Reivindicar -->
-    <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <!-- MODAL DE CONTACTO -->
+    <div id="contactModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            <h3 class="text-xl font-bold text-blue-900 mb-2">Área do Proprietário</h3>
-            <p class="text-slate-600 text-sm mb-4">Insira o e-mail ou NIF da instituição para gerir o seu perfil e atualizar vagas em tempo real.</p>
-            <input type="text" placeholder="NIF ou E-mail da Instituição" class="w-full p-3 border rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-            <button onclick="alert('Pedido enviado! Entraremos em contacto para validação.'); closeModal();" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition">
-                Reclamar Perfil / Login
-            </button>
+            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            <h3 class="text-xl font-bold text-blue-900 mb-1">Pedir Informações</h3>
+            <p class="text-xs text-slate-500 mb-4" id="modalInstName">Instituição</p>
+
+            <form onsubmit="sendContact(event)" class="space-y-3">
+                <input type="hidden" id="modalInstId" />
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">O seu Nome *</label>
+                    <input type="text" id="contactName" required class="w-full p-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">O seu E-mail *</label>
+                    <input type="email" id="contactEmail" required class="w-full p-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Telefone / Telemóvel</label>
+                    <input type="tel" id="contactPhone" class="w-full p-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Mensagem *</label>
+                    <textarea id="contactMessage" required rows="3" placeholder="Gostaria de saber a disponibilidade de vagas e condições de admissão..." class="w-full p-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition text-sm">
+                    Enviar Pedido de Contacto
+                </button>
+            </form>
         </div>
     </div>
 
     <!-- Script Conexao Supabase -->
     <script>
-        // URL E CHAVE CORRIGIDAS
         const SUPABASE_URL = "https://lxoqqshmjdjcbhmqzeww.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_JKHLCNar5LzKMhLfik0jxQ_xfzCWkxZ";
         
         let supabaseClient = null;
         let database = [];
+        let filteredDatabase = [];
+        let contactsList = [];
+
+        let currentPage = 1;
+        const pageSize = 18;
 
         if (typeof supabase !== 'undefined') {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
 
         async function fetchInstitutions() {
-            if (!supabaseClient) {
-                console.warn("Supabase ainda não configurado no código.");
-                return;
-            }
+            if (!supabaseClient) return;
+            // Carrega toda a base nacional (sem limite de 1000 items)
             const { data, error } = await supabaseClient.from('institutions').select('*');
-            if (error) {
-                console.error("Erro Supabase:", error);
-                return;
+            if (!error && data) {
+                database = data;
+                filteredDatabase = [...database];
+                currentPage = 1;
+                renderPaginatedList();
+                updateStats();
             }
-            database = data || [];
-            renderList(database);
         }
 
-        function renderList(items) {
+        async function fetchContacts() {
+            if (!supabaseClient) return;
+            const { data, error } = await supabaseClient.from('contacts').select('*').order('created_at', { ascending: false });
+            if (!error && data) {
+                contactsList = data;
+                renderContactsTable();
+                updateStats();
+            }
+        }
+
+        function renderPaginatedList() {
             const grid = document.getElementById('resultsGrid');
             const count = document.getElementById('resultsCount');
             grid.innerHTML = '';
-            count.innerText = `${items.length} instituição(ões)`;
+            
+            count.innerText = `${filteredDatabase.length} instituição(ões) encontrada(s)`;
 
-            if (items.length === 0) {
+            if (filteredDatabase.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
-                        <p class="text-slate-500 font-medium">Nenhuma instituição encontrada com estes critérios.</p>
+                        <p class="text-slate-500 font-medium">Nenhuma instituição encontrada com estes critérios de pesquisa.</p>
                         <button onclick="resetFilters()" class="mt-3 text-sm text-blue-600 font-bold hover:underline">Limpar Filtros</button>
                     </div>
                 `;
+                document.getElementById('paginationControls').classList.add('hidden');
                 return;
             }
 
-            items.forEach(item => {
+            document.getElementById('paginationControls').classList.remove('hidden');
+
+            const totalPages = Math.ceil(filteredDatabase.length / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageItems = filteredDatabase.slice(start, end);
+
+            pageItems.forEach(item => {
                 const card = `
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                         <div>
                             <div class="flex flex-wrap gap-1 mb-2">
                                 <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                    ${item.type}
+                                    ${item.type || 'Serviço Sénior'}
                                 </span>
                                 <span class="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                    ${item.entity}
+                                    ${item.entity || 'Entidade Mapeada'}
                                 </span>
                             </div>
                             
                             <h4 class="text-lg font-bold text-slate-900 leading-snug mb-1">${item.name}</h4>
-                            <p class="text-xs text-slate-500 mb-3">📍 ${item.freguesia}, ${item.concelho} (${item.district})</p>
+                            <p class="text-xs text-slate-500 mb-1">📍 ${item.freguesia ? item.freguesia + ', ' : ''}${item.concelho} (${item.district})</p>
+                            ${item.address ? `<p class="text-[11px] text-slate-400 mb-3 truncate">🏠 ${item.address}</p>` : '<div class="mb-3"></div>'}
                             
                             <div class="mb-4">
                                 <span class="text-xs ${item.vacancies > 0 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-slate-500 bg-slate-100'} px-2.5 py-1 rounded-full font-semibold border">
@@ -174,16 +293,37 @@
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto gap-2">
                             <span class="text-xs font-bold text-slate-700">${item.price || 'Sob Consulta'}</span>
-                            <button onclick="openModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
-                                Reclamar
+                            <button onclick="openContactModal(${item.id}, '${item.name.replace(/'/g, "\\'")}')" class="bg-blue-900 hover:bg-blue-800 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition">
+                                Contactar
                             </button>
                         </div>
                     </div>
                 `;
                 grid.innerHTML += card;
             });
+
+            document.getElementById('pageIndicator').innerText = `Página ${currentPage} de ${totalPages}`;
+            document.getElementById('btnPrev').disabled = (currentPage === 1);
+            document.getElementById('btnNext').disabled = (currentPage === totalPages);
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPaginatedList();
+                window.scrollTo({ top: 300, behavior: 'smooth' });
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredDatabase.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPaginatedList();
+                window.scrollTo({ top: 300, behavior: 'smooth' });
+            }
         }
 
         function applyFilters() {
@@ -193,17 +333,18 @@
             const type = document.getElementById('typeSelect').value;
             const entity = document.getElementById('entitySelect').value;
 
-            const filtered = database.filter(item => {
-                const matchKeyword = !keyword || item.name.toLowerCase().includes(keyword);
+            filteredDatabase = database.filter(item => {
+                const matchKeyword = !keyword || item.name.toLowerCase().includes(keyword) || (item.nif && item.nif.includes(keyword));
                 const matchDistrict = !district || item.district === district;
-                const matchLocation = !location || item.concelho.toLowerCase().includes(location) || item.freguesia.toLowerCase().includes(location);
+                const matchLocation = !location || (item.concelho && item.concelho.toLowerCase().includes(location)) || (item.freguesia && item.freguesia.toLowerCase().includes(location));
                 const matchType = !type || item.type === type;
                 const matchEntity = !entity || item.entity === entity;
 
                 return matchKeyword && matchDistrict && matchLocation && matchType && matchEntity;
             });
 
-            renderList(filtered);
+            currentPage = 1;
+            renderPaginatedList();
         }
 
         function resetFilters() {
@@ -212,13 +353,96 @@
             document.getElementById('locationInput').value = '';
             document.getElementById('typeSelect').value = '';
             document.getElementById('entitySelect').value = '';
-            renderList(database);
+            filteredDatabase = [...database];
+            currentPage = 1;
+            renderPaginatedList();
         }
 
-        function openModal() { document.getElementById('modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        function updateStats() {
+            document.getElementById('statTotalInst').innerText = database.length;
+            const totalVac = database.reduce((acc, curr) => acc + (curr.vacancies || 0), 0);
+            document.getElementById('statTotalVacancies').innerText = totalVac;
+            document.getElementById('statTotalContacts').innerText = contactsList.length;
+        }
 
-        window.onload = fetchInstitutions;
+        function renderContactsTable() {
+            const tbody = document.getElementById('contactsTableBody');
+            if (contactsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum contacto recebido até ao momento.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = contactsList.map(c => `
+                <tr class="border-b">
+                    <td class="p-3 text-xs text-slate-400">${new Date(c.created_at).toLocaleDateString('pt-PT')}</td>
+                    <td class="p-3 font-semibold text-slate-800">${c.institution_name || 'Geral'}</td>
+                    <td class="p-3">${c.sender_name}</td>
+                    <td class="p-3 text-xs">${c.sender_email}<br>${c.sender_phone || ''}</td>
+                    <td class="p-3 text-xs italic">${c.message}</td>
+                </tr>
+            `).join('');
+        }
+
+        function openContactModal(id, name) {
+            document.getElementById('modalInstId').value = id;
+            document.getElementById('modalInstName').innerText = name;
+            document.getElementById('contactModal').classList.remove('hidden');
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.add('hidden');
+        }
+
+        async function sendContact(e) {
+            e.preventDefault();
+            const instId = document.getElementById('modalInstId').value;
+            const instName = document.getElementById('modalInstName').innerText;
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const phone = document.getElementById('contactPhone').value;
+            const message = document.getElementById('contactMessage').value;
+
+            const { error } = await supabaseClient.from('contacts').insert([{
+                institution_id: instId,
+                institution_name: instName,
+                sender_name: name,
+                sender_email: email,
+                sender_phone: phone,
+                message: message
+            }]);
+
+            if (error) {
+                alert("Ocorreu um erro ao enviar a mensagem. Tente novamente.");
+            } else {
+                alert("Pedido de contacto enviado com sucesso!");
+                closeContactModal();
+                fetchContacts();
+            }
+        }
+
+        function switchView(view) {
+            const pub = document.getElementById('publicView');
+            const adm = document.getElementById('adminView');
+            const btnPub = document.getElementById('btnPublicView');
+            const btnAdm = document.getElementById('btnAdminView');
+
+            if (view === 'admin') {
+                pub.classList.add('hidden');
+                adm.classList.remove('hidden');
+                btnAdm.className = "bg-blue-900 text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm";
+                btnPub.className = "bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs px-4 py-2 rounded-xl transition";
+                fetchContacts();
+            } else {
+                adm.classList.add('hidden');
+                pub.classList.remove('hidden');
+                btnPub.className = "bg-blue-900 text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm";
+                btnAdm.className = "bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs px-4 py-2 rounded-xl transition";
+            }
+        }
+
+        window.onload = () => {
+            fetchInstitutions();
+            fetchContacts();
+        };
     </script>
 </body>
 </html>
